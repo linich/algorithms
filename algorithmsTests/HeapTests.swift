@@ -9,27 +9,31 @@ import XCTest
 @testable import algorithms
 
 struct Heap<T> {
-    var item: T?
+    private var items: [T] = Array<T>()
+    private var heapSize: Int = 0
     public var isEmpty: Bool {
-        return item == nil
+        return heapSize == 0
     }
     
     public mutating func insert(_ item: T) {
-        self.item = item
+        heapSize += 1
+        self.items.append(item)
     }
     
     public var top: T? {
-        return item
+        return items.first
     }
     
     public mutating func pop() -> T {
-        guard let item = self.item else {
+        guard let item = self.items.first else {
             fatalError("Heap is empty")
         }
         
         defer {
-            self.item = nil
+            heapSize -= 1
+            self.items.removeFirst()
         }
+        
         return item
     }
 }
@@ -78,6 +82,28 @@ final class algorithmsTests: XCTestCase {
         let _ = sut.pop()
         
         XCTAssertTrue(sut.isEmpty, "Expected that pop remove one item from heap")
+    }
+    
+    func test_pop_shouldReturnsItemWithMaxValue() {
+        var sut: Heap<Int> = createSUT()
+        
+        sut.insert(2)
+        sut.insert(1)
+        
+        let item = sut.pop()
+        
+        XCTAssertEqual(item, 2, "Expect to pop item with max value")
+    }
+    
+    func test_pop_shouldUpdateTop() {
+        var sut: Heap<Int> = createSUT()
+        
+        sut.insert(2)
+        sut.insert(1)
+        
+        let item = sut.pop()
+        
+        XCTAssertEqual(sut.top, 1, "Expect that top was updated")
     }
     
     fileprivate func createSUT<T>() -> Heap<T> {
