@@ -22,11 +22,14 @@ struct Heap<T> {
         return item
     }
     
-    public func pop() -> T {
+    public mutating func pop() -> T {
         guard let item = self.item else {
             fatalError("Heap is empty")
         }
         
+        defer {
+            self.item = nil
+        }
         return item
     }
 }
@@ -66,6 +69,15 @@ final class algorithmsTests: XCTestCase {
         sut.insert(1)
         
         XCTAssertEqual(sut.pop(), 1, "Expect to pop just inserted value")
+    }
+    
+    func test_isEmpty_returnTrueAfterWePopLastItemFromHeap() {
+        var sut: Heap<Int> = createSUT()
+        
+        sut.insert(1)
+        let _ = sut.pop()
+        
+        XCTAssertTrue(sut.isEmpty, "Expected that pop remove one item from heap")
     }
     
     fileprivate func createSUT<T>() -> Heap<T> {
