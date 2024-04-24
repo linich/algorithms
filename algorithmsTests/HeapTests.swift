@@ -16,9 +16,13 @@ struct Heap<T: Comparable> {
     }
     
     public mutating func insert(_ item: T) {
-        heapSize += 1
-        self.items.append(item)
+        if heapSize < self.items.count {
+            self.items[heapSize] = item
+        } else {
+            self.items.append(item)
+        }
         
+        heapSize += 1
         self.maximize(heapSize - 1)
     }
     
@@ -59,7 +63,6 @@ struct Heap<T: Comparable> {
             swap(index, parent(index))
             index = parent(index)
         }
-                
     }
     
     private mutating func pushDownIfNeed(_ i: Int) {
@@ -170,16 +173,35 @@ final class algorithmsTests: XCTestCase {
         assert(&sut, containsItems: [12,11,10,2,1])
     }
     
+    func test_pop_shouldWorksCorrectlyAfterInsertNewItems() {
+        var sut: Heap<Int> = createSUT()
+        sut.insert(11)
+        sut.insert(2)
+        sut.insert(10)
+        sut.insert(1)
+        sut.insert(12)
+        
+        let _ = sut.pop()
+        let _ = sut.pop()
+        let _ = sut.pop()
+        
+        sut.insert(15)
+        sut.insert(5)
+        sut.insert(0)
+        
+        assert(&sut, containsItems: [15,5,2,1,0])
+    }
+    
     // Mark: Helpers
     
-    fileprivate func assert<T>(_  sut: inout Heap<T>, containsItems items: [T], file: StaticString = #file, line: UInt = #line) {
+    fileprivate func assert<T>(_  sut: inout Heap<T>, containsItems expected: [T], file: StaticString = #file, line: UInt = #line) {
         var items = Array<T>()
         
         while !sut.isEmpty {
             items.append(sut.pop())
         }
         
-        XCTAssertEqual(items, items, "Items should be in same order", file: file, line: line)
+        XCTAssertEqual(items, expected, "Items should be in same order", file: file, line: line)
     }
     
     fileprivate func createSUT<T>() -> Heap<T> {
