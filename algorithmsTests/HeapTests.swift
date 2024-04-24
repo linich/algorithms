@@ -11,7 +11,7 @@ import XCTest
 struct Heap<T> {
     var item: T?
     public var isEmpty: Bool {
-        return true
+        return item == nil
     }
     
     public mutating func insert(_ item: T) {
@@ -42,6 +42,14 @@ final class algorithmsTests: XCTestCase {
         sut.insert(2)
         
         XCTAssertEqual(sut.top, 2, "Expected to receive just inserted item")
+    }
+    
+    func test_isEmpty_returnsFalseAfteInsertItemInHeap() {
+        var sut: Heap<Int> = createSUT()
+        
+        sut.insert(2)
+        
+        XCTAssertFalse(sut.isEmpty,"Heap should be empty after insertion item in heap")
     }
     
     fileprivate func createSUT<T>() -> Heap<T> {
